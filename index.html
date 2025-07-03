@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Escape Game - Accès Protégé</title>
+  <style>
+    body {
+      background-color: #0b0c10;
+      color: #c5c6c7;
+      font-family: 'Courier New', monospace;
+      text-align: center;
+      padding-top: 100px;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+      color: #66fcf1;
+    }
+
+    input[type="password"] {
+      padding: 12px;
+      font-size: 18px;
+      background-color: #1f2833;
+      color: #c5c6c7;
+      border: none;
+      border-bottom: 2px solid #66fcf1;
+      width: 250px;
+      max-width: 90vw;
+      box-sizing: border-box;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 18px;
+      background-color: #45a29e;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      margin: 10px;
+      border-radius: 5px;
+      max-width: 90vw;
+      box-sizing: border-box;
+    }
+
+    .error {
+      color: red;
+      margin-top: 20px;
+      font-size: 1em;
+    }
+
+    #timer {
+      font-size: 2em;
+      margin-top: 40px;
+      color: #ff0000;
+    }
+
+    /* Modal admin */
+    #adminModal {
+	  display: none; /* caché au départ */
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      color: #fff;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      font-family: monospace;
+      z-index: 9999;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .modalContent {
+      background: #1f2833;
+      padding: 25px 20px 30px 20px;
+      border-radius: 12px;
+      width: 90vw;
+      max-width: 360px;
+      box-sizing: border-box;
+      text-align: center;
+      box-shadow: 0 0 15px #45a29eaa;
+    }
+
+    #adminModal h2 {
+      margin-top: 0;
+      font-size: 1.8em;
+      margin-bottom: 15px;
+      color: #66fcf1;
+    }
+
+    #adminModal input {
+      padding: 15px;
+      font-size: 20px;
+      border-radius: 6px;
+      border: none;
+      background: #12191f;
+      color: #c5c6c7;
+      width: 100%;
+      box-sizing: border-box;
+      border-bottom: 2px solid #66fcf1;
+      outline-offset: 2px;
+    }
+
+    #adminModal button {
+      padding: 15px 20px;
+      font-size: 20px;
+      border-radius: 6px;
+      background-color: #45a29e;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 15px;
+      width: 100%;
+      box-sizing: border-box;
+      transition: background-color 0.3s ease;
+    }
+
+    #adminModal button:hover {
+      background-color: #3b8380;
+    }
+
+    #adminError {
+      margin-top: 15px;
+      font-size: 1em;
+      color: #ff5555;
+      min-height: 1.2em;
+    }
+
+    /* Responsive fixes for main input and buttons */
+    @media (max-width: 400px) {
+      input[type="password"] {
+        width: 90vw;
+      }
+
+      button {
+        width: 90vw;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🔐 Accès Restreint — Escape Game</h1>
+  <p>Entrez le mot de passe pour accéder à la prochaine étape…</p>
+
+  <input type="password" id="password" placeholder="Mot de passe" />
+  <button onclick="checkPassword()">Valider</button>
+  <div class="error" id="error"></div>
+
+  <div id="timer">⏳ Temps restant : 60:00</div>
+
+  <!-- Bouton admin + reset -->
+  <div style="margin-top:40px;">
+    <button onclick="adminLogin()">🔐 Admin</button>
+    <button id="resetButton" onclick="resetTimer()" style="display:none;">🔄 Réinitialiser le jeu</button>
+  </div>
+
+  <!-- Modal admin -->
+  <div id="adminModal" aria-hidden="true" role="dialog" aria-labelledby="adminTitle" aria-modal="true">
+    <div class="modalContent">
+      <h2 id="adminTitle">🔐 Mot de passe admin</h2>
+      <input type="password" id="adminPasswordInput" placeholder="Mot de passe admin" autocomplete="off" />
+      <button onclick="validateAdminPassword()">Valider</button>
+      <button onclick="closeAdminModal()" style="margin-top:10px; background:#c54a4a;">Annuler</button>
+      <div id="adminError"></div>
+    </div>
+  </div>
+
+  <script>
+    function checkPassword() {
+      const password = document.getElementById("password").value;
+      if (password === "REVIE232") {
+        window.location.href = "secret.html";
+      } else {
+        document.getElementById("error").textContent = "Mot de passe incorrect.";
+      }
+    }
+
+    const TIMER_DURATION = 60 * 60 * 1000; // 60 minutes en ms
+
+    function getRemainingTime() {
+      const startTime = localStorage.getItem("startTime");
+      if (!startTime) {
+        const now = Date.now();
+        localStorage.setItem("startTime", now);
+        return TIMER_DURATION;
+      }
+      const elapsed = Date.now() - parseInt(startTime);
+      return Math.max(TIMER_DURATION - elapsed, 0);
+    }
+
+    function updateTimerDisplay(timeLeft) {
+      const minutes = Math.floor(timeLeft / 60000);
+      const seconds = Math.floor((timeLeft % 60000) / 1000);
+      document.getElementById("timer").textContent =
+        timeLeft > 0
+          ? `⏳ Temps restant : ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+          : "💥 Temps écoulé !";
+    }
+
+    function startPersistentTimer() {
+      function tick() {
+        const timeLeft = getRemainingTime();
+        updateTimerDisplay(timeLeft);
+        if (timeLeft > 0) {
+          setTimeout(tick, 1000);
+        }
+      }
+      tick();
+    }
+
+    function resetTimer() {
+      localStorage.setItem("startTime", Date.now());
+      startPersistentTimer();
+      alert("Le timer a été réinitialisé.");
+    }
+
+    function adminLogin() {
+      const modal = document.getElementById("adminModal");
+      modal.style.display = "flex";
+      modal.setAttribute('aria-hidden', 'false');
+      document.getElementById("adminPasswordInput").focus();
+    }
+
+    function closeAdminModal() {
+      const modal = document.getElementById("adminModal");
+      modal.style.display = "none";
+      modal.setAttribute('aria-hidden', 'true');
+      document.getElementById("adminPasswordInput").value = "";
+      document.getElementById("adminError").textContent = "";
+    }
+
+    function validateAdminPassword() {
+      const entered = document.getElementById("adminPasswordInput").value;
+      if (entered === "32591996") {
+        document.getElementById("resetButton").style.display = "inline-block";
+        closeAdminModal();
+        alert("Accès admin accordé. Bouton de réinitialisation activé.");
+      } else {
+        document.getElementById("adminError").textContent = "Mot de passe incorrect.";
+      }
+    }
+
+    startPersistentTimer();
+  </script>
+
+</body>
+</html>
