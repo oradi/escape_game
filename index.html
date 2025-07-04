@@ -233,6 +233,13 @@
   </style>
 </head>
 <body>
+  <!-- AUDIOS -->
+  <audio id="typeSound" src="type-glitch.mp3"></audio>
+  <audio id="typeIntroSound" src="type-writer.mp3"></audio>
+  <audio id="finalGlitchSound" src="final-glitch.mp3"></audio>
+  <audio id="passwordSuccessSound" src="success.mp3"></audio>
+  <audio id="passwordErrorSound" src="error.mp3"></audio>
+  <audio id="waitingMusic" src="waiting.mp3" loop autoplay></audio>
 
   <!-- INTRO -->
 <div id="intro">
@@ -263,6 +270,12 @@
       <button onclick="adminLogin()">🔐 Admin</button>
       <button id="resetButton" onclick="resetTimer()" style="display:none;">🔄 Réinitialiser le jeu</button>
     </div>
+    <script>
+      // Play waitingMusic in loop when password game is shown
+      const waitingMusic = document.getElementById("waitingMusic");
+      waitingMusic.loop = true;
+      waitingMusic.play();
+    </script>
   </div>
 
   <!-- MODAL ADMIN -->
@@ -276,10 +289,6 @@
     </div>
   </div>
 
-  <!-- AUDIOS -->
-  <audio id="typeSound" src="type-glitch.mp3"></audio>
-  <audio id="finalGlitchSound" src="final-glitch.mp3"></audio>
-
   <script>
     // INTRO 
     let introText = "Florent, 30 ans, se réveille après une expérience scientifique qui a terriblement mal tourné.\nSa mémoire est fragmentée : des souvenirs essentiels sont verrouillés derrière un mot de passe qu’il a totalement oublié.\n\nPour redevenir lui-même, il doit explorer les bribes de son passé, résoudre des énigmes et retrouver ce mot de passe…\nCelui qui débloquera enfin sa mémoire.";
@@ -290,6 +299,7 @@
       if (introIndex < introText.length) {
         const char = introText.charAt(introIndex) === '\n' ? '<br><br>' : introText.charAt(introIndex);
         document.getElementById("introStory").innerHTML += char;
+        if (introIndex % 5 === 0) typeSound.play();
         introIndex++;
         setTimeout(typeWriterIntro, introSpeed);
       }
@@ -340,8 +350,10 @@
     function checkPassword() {
       if (document.getElementById("password").value.toUpperCase() === "REVIE232") {
         alert("Bravo ! Vous avez trouvé le mot de passe.");
+        document.getElementById("passwordSuccessSound").play();
       } else {
         document.getElementById("error").textContent = "Mot de passe incorrect.";
+        document.getElementById("passwordErrorSound").play();
       }
     }
 
@@ -388,6 +400,8 @@
     }
 
     function startPersistentTimer() {
+      const startTime = localStorage.getItem("startTime");
+      if (!startTime) localStorage.setItem("startTime", Date.now()); 
       function tick() {
         const timeLeft = getRemainingTime();
         updateTimerDisplay(timeLeft);
@@ -397,8 +411,8 @@
     }
 
     function resetTimer() {
-      localStorage.setItem("startTime", Date.now());
-      startPersistentTimer();
+      localStorage.removeItem("startTime");
+      alert("Timer réinitialisé.");
       alert("Timer réinitialisé.");
     }
   </script>
