@@ -246,7 +246,6 @@
   <h1>🧬 Fragments d'une mémoire perdue</h1>
   <p id="introStory"></p>
   <button onclick="startGlitch()">Commencer la quête</button>
-  <button onclick="startGame()">Commencer la quête</button>
   <div style="margin-top:20px;">
     <button onclick="adminLogin()">🔐 Admin</button>
     <button id="resetButton" onclick="resetTimer()" style="display:none;">🔄 Réinitialiser le jeu</button>
@@ -287,22 +286,15 @@
     let introIndex = 0;
     let introSpeed = 50;
 
-  function typeWriterIntro() {
-    if (introIndex < introText.length) {
-      const char = introText.charAt(introIndex) === '\n' ? '<br><br>' : introText.charAt(introIndex);
-      document.getElementById("introStory").innerHTML += char;
-      if (introIndex % 5 === 0) {
-        try {
-          typeIntroSound.currentTime = 0;
-          //typeIntroSound.play();
-        } catch(e) {
-          console.log("Autoplay bloqué", e);
-        }
+    function typeWriterIntro() {
+      if (introIndex < introText.length) {
+        const char = introText.charAt(introIndex) === '\n' ? '<br><br>' : introText.charAt(introIndex);
+        document.getElementById("introStory").innerHTML += char;
+        if (introIndex % 5 === 0) typeIntroSound.play();
+        introIndex++;
+        setTimeout(typeWriterIntro, introSpeed);
       }
-      introIndex++;
-      setTimeout(typeWriterIntro, introSpeed);
     }
-  }
 
     document.addEventListener("DOMContentLoaded", function() {
       typeWriterIntro();
@@ -318,11 +310,7 @@
     let text = "…Chargement des souvenirs…\n\n> Système mémoire compromis.\n> Recherche d’éléments autobiographiques…\n> Analyse des fragments…\n\nDonnées corrompues.\nAccès restreint.\n\n[CODE NÉCESSAIRE POUR DÉBLOCAGE]";
     let i = 0;
     let speed = 40;
-  
-    function startGame() {
-      typeIntroSound.play(); // autorisé car déclenché par un clic
-      typeWriterIntro();
-    }
+
     function startGlitch() {
       document.getElementById("intro").style.display = "none";
       glitchDiv.style.display = "block";
