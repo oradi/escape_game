@@ -290,7 +290,7 @@
       if (introIndex < introText.length) {
         const char = introText.charAt(introIndex) === '\n' ? '<br><br>' : introText.charAt(introIndex);
         document.getElementById("introStory").innerHTML += char;
-        if (introIndex % 5 === 0) typeSound.play();
+        if (introIndex % 5 === 0) typeIntroSound.play();
         introIndex++;
         setTimeout(typeWriterIntro, introSpeed);
       }
