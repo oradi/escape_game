@@ -246,6 +246,7 @@
   <h1>🧬 Fragments d'une mémoire perdue</h1>
   <p id="introStory"></p>
   <button onclick="startGlitch()">Commencer la quête</button>
+  <button onclick="startGame()">Commencer la quête</button>
   <div style="margin-top:20px;">
     <button onclick="adminLogin()">🔐 Admin</button>
     <button id="resetButton" onclick="resetTimer()" style="display:none;">🔄 Réinitialiser le jeu</button>
@@ -293,7 +294,7 @@
       if (introIndex % 5 === 0) {
         try {
           typeIntroSound.currentTime = 0;
-          typeIntroSound.play().catch(()=>{});
+          //typeIntroSound.play();
         } catch(e) {
           console.log("Autoplay bloqué", e);
         }
