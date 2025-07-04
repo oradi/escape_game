@@ -239,7 +239,7 @@
   <audio id="finalGlitchSound" src="final-glitch.mp3"></audio>
   <audio id="passwordSuccessSound" src="success.mp3"></audio>
   <audio id="passwordErrorSound" src="error.mp3"></audio>
-  <audio id="waitingMusic" src="waiting.mp3" loop autoplay></audio>
+  <audio id="waitingMusic" src="waiting.mp3"></audio>
 
   <!-- INTRO -->
 <div id="intro">
@@ -266,13 +266,8 @@
     <button onclick="checkPassword()">Valider</button>
     <div class="error" id="error"></div>
     <div id="timer">⏳ Temps restant : 60:00</div>
-    <div style="margin-top:40px;">
-      <button onclick="adminLogin()">🔐 Admin</button>
-      <button id="resetButton" onclick="resetTimer()" style="display:none;">🔄 Réinitialiser le jeu</button>
-    </div>
     <script>
       // Play waitingMusic in loop when password game is shown
-      const waitingMusic = document.getElementById("waitingMusic");
       waitingMusic.loop = true;
       waitingMusic.play();
     </script>
@@ -351,6 +346,7 @@
       if (document.getElementById("password").value.toUpperCase() === "REVIE232") {
         alert("Bravo ! Vous avez trouvé le mot de passe.");
         document.getElementById("passwordSuccessSound").play();
+        window.location.href = "secret.html";
       } else {
         document.getElementById("error").textContent = "Mot de passe incorrect.";
         document.getElementById("passwordErrorSound").play();
