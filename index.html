@@ -3,18 +3,164 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Escape Game - Accès Protégé</title>
+  <title>Escape Game - Fragments de mémoire</title>
   <style>
     body {
       background-color: #0b0c10;
       color: #c5c6c7;
       font-family: 'Courier New', monospace;
       text-align: center;
-      padding-top: 100px;
       margin: 0;
+      padding: 20px;
+      box-sizing: center;
     }
 
+    #intro, #game {
+      max-width: 800px;
+      margin: auto;
+      padding: 60px 20px;
+    }
+    
     h1 {
+      color: #66fcf1;
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+
+
+    #story {
+      font-size: 1.3em;
+      max-width: 600px;
+      line-height: 1.5em;
+      margin: auto;
+      white-space: pre-wrap;
+    }
+
+    #memoryBarContainer {
+      width: 80%;
+      max-width: 500px;
+      height: 20px;
+      background: #1f2833;
+      border: 1px solid #66fcf1;
+      margin: 30px auto;
+      display: none;
+    }
+
+    #memoryBar {
+      height: 100%;
+      width: 0%;
+      background: #66fcf1;
+      transition: width 0.5s;
+    }
+
+    #startButton {
+      padding: 15px 30px;
+      font-size: 1.1em;
+      background: #45a29e;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 30px;
+      display: none;
+      transition: background 0.3s;
+    }
+
+    #startButton:hover {
+      background: #3b8380;
+    }
+
+     .fade-out {
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    .fade-in {
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    .fade-in.show {
+      opacity: 1;
+    }
+
+    .glitch {
+      position: relative;
+      color: #fff;
+      font-size: 1.4em;
+    }
+
+    .glitch::before,
+    .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      left: 0;
+      width: 100%;
+      overflow: hidden;
+      color: #ff00c8;
+      clip: rect(0, 900px, 0, 0);
+      animation: glitch 2s infinite linear alternate-reverse;
+    }
+
+    .glitch::after {
+      color: #00fff9;
+      animation: glitch 3s infinite linear alternate-reverse;
+    }
+
+    @keyframes glitch {
+      0% {
+        clip: rect(0, 9999px, 0, 0);
+        transform: translate(0, 0);
+      }
+      10% {
+        clip: rect(10px, 9999px, 40px, 0);
+        transform: translate(-5px, -3px);
+      }
+      20% {
+        clip: rect(60px, 9999px, 90px, 0);
+        transform: translate(5px, 3px);
+      }
+      30% {
+        clip: rect(20px, 9999px, 50px, 0);
+        transform: translate(-5px, 0);
+      }
+      40% {
+        clip: rect(40px, 9999px, 70px, 0);
+        transform: translate(5px, -5px);
+      }
+      50% {
+        clip: rect(60px, 9999px, 90px, 0);
+        transform: translate(-5px, 5px);
+      }
+      60% {
+        clip: rect(20px, 9999px, 50px, 0);
+        transform: translate(5px, 0);
+      }
+      70% {
+        clip: rect(10px, 9999px, 40px, 0);
+        transform: translate(-5px, -5px);
+      }
+      80% {
+        clip: rect(40px, 9999px, 70px, 0);
+        transform: translate(5px, 5px);
+      }
+      90% {
+        clip: rect(60px, 9999px, 90px, 0);
+        transform: translate(-5px, 0);
+      }
+      100% {
+        clip: rect(0, 9999px, 0, 0);
+        transform: translate(0, 0);
+      }
+    }
+
+    /* Partie Escape Game */
+    input[type="password"], button {
+      font-size: 18px;
+      border-radius: 5px;
+    }
+
+    #game h1 {
       font-size: 2.5em;
       margin-bottom: 20px;
       color: #66fcf1;
@@ -22,7 +168,6 @@
 
     input[type="password"] {
       padding: 12px;
-      font-size: 18px;
       background-color: #1f2833;
       color: #c5c6c7;
       border: none;
@@ -30,9 +175,8 @@
       width: 250px;
       max-width: 90vw;
       box-sizing: border-box;
-      border-radius: 5px;
     }
-
+  
     button {
       padding: 12px 24px;
       font-size: 18px;
@@ -40,12 +184,9 @@
       color: #fff;
       border: none;
       cursor: pointer;
-      margin: 10px;
+      margin-top: 30px;
       border-radius: 5px;
-      max-width: 90vw;
-      box-sizing: border-box;
     }
-
     .error {
       color: red;
       margin-top: 20px;
@@ -60,7 +201,7 @@
 
     /* Modal admin */
     #adminModal {
-	  display: none; /* caché au départ */
+      display: none;
       position: fixed;
       top: 0; left: 0;
       width: 100%;
@@ -70,15 +211,12 @@
       align-items: center;
       justify-content: center;
       flex-direction: column;
-      font-family: monospace;
       z-index: 9999;
-      padding: 20px;
-      box-sizing: border-box;
     }
 
     .modalContent {
       background: #1f2833;
-      padding: 25px 20px 30px 20px;
+      padding: 25px;
       border-radius: 12px;
       width: 90vw;
       max-width: 360px;
@@ -87,58 +225,8 @@
       box-shadow: 0 0 15px #45a29eaa;
     }
 
-    #adminModal h2 {
-      margin-top: 0;
-      font-size: 1.8em;
-      margin-bottom: 15px;
-      color: #66fcf1;
-    }
-
-    #adminModal input {
-      padding: 15px;
-      font-size: 20px;
-      border-radius: 6px;
-      border: none;
-      background: #12191f;
-      color: #c5c6c7;
-      width: 100%;
-      box-sizing: border-box;
-      border-bottom: 2px solid #66fcf1;
-      outline-offset: 2px;
-    }
-
-    #adminModal button {
-      padding: 15px 20px;
-      font-size: 20px;
-      border-radius: 6px;
-      background-color: #45a29e;
-      color: white;
-      border: none;
-      cursor: pointer;
-      margin-top: 15px;
-      width: 100%;
-      box-sizing: border-box;
-      transition: background-color 0.3s ease;
-    }
-
-    #adminModal button:hover {
-      background-color: #3b8380;
-    }
-
-    #adminError {
-      margin-top: 15px;
-      font-size: 1em;
-      color: #ff5555;
-      min-height: 1.2em;
-    }
-
-    /* Responsive fixes for main input and buttons */
     @media (max-width: 400px) {
-      input[type="password"] {
-        width: 90vw;
-      }
-
-      button {
+      input[type="password"], button {
         width: 90vw;
       }
     }
@@ -146,49 +234,145 @@
 </head>
 <body>
 
-  <h1>🔐 Accès Restreint — Escape Game</h1>
-  <p>Entrez le mot de passe pour accéder à la prochaine étape…</p>
-
-  <input type="password" id="password" placeholder="Mot de passe" />
-  <button onclick="checkPassword()">Valider</button>
-  <div class="error" id="error"></div>
-
-  <div id="timer">⏳ Temps restant : 60:00</div>
-
-  <!-- Bouton admin + reset -->
-  <div style="margin-top:40px;">
+  <!-- INTRO -->
+<div id="intro">
+  <h1>🧬 Fragments d'une mémoire perdue</h1>
+  <p id="introStory"></p>
+  <button onclick="startGlitch()">Commencer la quête</button>
+  <div style="margin-top:20px;">
     <button onclick="adminLogin()">🔐 Admin</button>
     <button id="resetButton" onclick="resetTimer()" style="display:none;">🔄 Réinitialiser le jeu</button>
   </div>
+</div>
 
-  <!-- Modal admin -->
-  <div id="adminModal" aria-hidden="true" role="dialog" aria-labelledby="adminTitle" aria-modal="true">
+  <!-- GLITCH / LOADING MEMOIRE -->
+  <div id="glitch" style="display:none;">
+    <div id="story"></div>
+    <button id="startButton" style="display:none;" onclick="showPasswordGame()">Continuer</button>
+  </div>
+
+  <!-- MOT DE PASSE -->
+  <div id="passwordGame" style="display:none;">
+    <h1>🔐 Accès Restreint — Escape Game</h1>
+    <p>Entrez le mot de passe pour accéder à la prochaine étape…</p>
+    <input type="password" id="password" placeholder="Mot de passe" />
+    <button onclick="checkPassword()">Valider</button>
+    <div class="error" id="error"></div>
+    <div id="timer">⏳ Temps restant : 60:00</div>
+    <div style="margin-top:40px;">
+      <button onclick="adminLogin()">🔐 Admin</button>
+      <button id="resetButton" onclick="resetTimer()" style="display:none;">🔄 Réinitialiser le jeu</button>
+    </div>
+  </div>
+
+  <!-- MODAL ADMIN -->
+  <div id="adminModal">
     <div class="modalContent">
-      <h2 id="adminTitle">🔐 Mot de passe admin</h2>
-      <input type="password" id="adminPasswordInput" placeholder="Mot de passe admin" autocomplete="off" />
+      <h2>🔐 Mot de passe admin</h2>
+      <input type="password" id="adminPasswordInput" placeholder="Mot de passe admin" />
       <button onclick="validateAdminPassword()">Valider</button>
-      <button onclick="closeAdminModal()" style="margin-top:10px; background:#c54a4a;">Annuler</button>
+      <button onclick="closeAdminModal()" style="margin-top:10px;background:#c54a4a;">Annuler</button>
       <div id="adminError"></div>
     </div>
   </div>
 
+  <!-- AUDIOS -->
+  <audio id="typeSound" src="type-glitch.mp3"></audio>
+  <audio id="finalGlitchSound" src="final-glitch.mp3"></audio>
+
   <script>
+    // INTRO 
+    let introText = "Florent, 30 ans, se réveille après une expérience scientifique qui a terriblement mal tourné.\nSa mémoire est fragmentée : des souvenirs essentiels sont verrouillés derrière un mot de passe qu’il a totalement oublié.\n\nPour redevenir lui-même, il doit explorer les bribes de son passé, résoudre des énigmes et retrouver ce mot de passe…\nCelui qui débloquera enfin sa mémoire.";
+    let introIndex = 0;
+    let introSpeed = 50;
+
+    function typeWriterIntro() {
+      if (introIndex < introText.length) {
+        const char = introText.charAt(introIndex) === '\n' ? '<br><br>' : introText.charAt(introIndex);
+        document.getElementById("introStory").innerHTML += char;
+        introIndex++;
+        setTimeout(typeWriterIntro, introSpeed);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      typeWriterIntro();
+    });
+
+    // GLITCH 
+    const glitchDiv = document.getElementById("glitch");
+    const storyDiv = document.getElementById("story");
+    const startButton = document.getElementById("startButton");
+    const typeSound = document.getElementById("typeSound");
+    const finalGlitchSound = document.getElementById("finalGlitchSound");
+
+    let text = "…Chargement des souvenirs…\n\n> Système mémoire compromis.\n> Recherche d’éléments autobiographiques…\n> Analyse des fragments…\n\nDonnées corrompues.\nAccès restreint.\n\n[CODE NÉCESSAIRE POUR DÉBLOCAGE]";
+    let i = 0;
+    let speed = 40;
+
+    function startGlitch() {
+      document.getElementById("intro").style.display = "none";
+      glitchDiv.style.display = "block";
+      typeWriterGlitch();
+    }
+
+    function typeWriterGlitch() {
+      if (i < text.length) {
+        const char = text.charAt(i) === '\n' ? '<br><br>' : text.charAt(i);
+        storyDiv.innerHTML += char;
+        if (i % 8 === 0) typeSound.play();
+        i++;
+        setTimeout(typeWriterGlitch, speed);
+      } else {
+        finalGlitchSound.play();
+        storyDiv.innerHTML = `<span class="glitch" data-text="${text.replace(/\n/g, ' ')}">${text.replace(/\n/g, ' ')}</span>`;
+        startButton.style.display = "inline-block";
+      }
+    }
+
+    function showPasswordGame() {
+      glitchDiv.style.display = "none";
+      document.getElementById("passwordGame").style.display = "block";
+      startPersistentTimer();
+    }
+
+    // ESCAPE GAME 
     function checkPassword() {
-      const password = document.getElementById("password").value;
-      if (password === "REVIE232") {
-        window.location.href = "secret.html";
+      if (document.getElementById("password").value.toUpperCase() === "REVIE232") {
+        alert("Bravo ! Vous avez trouvé le mot de passe.");
       } else {
         document.getElementById("error").textContent = "Mot de passe incorrect.";
       }
     }
 
-    const TIMER_DURATION = 60 * 60 * 1000; // 60 minutes en ms
+    // ADMIN
+    function adminLogin() {
+      document.getElementById("adminModal").style.display = "flex";
+      document.getElementById("adminPasswordInput").focus();
+    }
 
+    function closeAdminModal() {
+      document.getElementById("adminModal").style.display = "none";
+      document.getElementById("adminPasswordInput").value = "";
+      document.getElementById("adminError").textContent = "";
+    }
+
+    function validateAdminPassword() {
+      if (document.getElementById("adminPasswordInput").value === "32591996") {
+        document.getElementById("resetButton").style.display = "inline-block";
+        closeAdminModal();
+        alert("Accès admin accordé. Bouton réinitialisation activé.");
+      } else {
+        document.getElementById("adminError").textContent = "Mot de passe incorrect.";
+      }
+    }
+
+    // TIMER 
+    const TIMER_DURATION = 60 * 60 * 1000;
     function getRemainingTime() {
       const startTime = localStorage.getItem("startTime");
       if (!startTime) {
-        const now = Date.now();
-        localStorage.setItem("startTime", now);
+        localStorage.setItem("startTime", Date.now());
         return TIMER_DURATION;
       }
       const elapsed = Date.now() - parseInt(startTime);
@@ -196,21 +380,18 @@
     }
 
     function updateTimerDisplay(timeLeft) {
-      const minutes = Math.floor(timeLeft / 60000);
-      const seconds = Math.floor((timeLeft % 60000) / 1000);
-      document.getElementById("timer").textContent =
-        timeLeft > 0
-          ? `⏳ Temps restant : ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
-          : "💥 Temps écoulé !";
+      const min = Math.floor(timeLeft / 60000);
+      const sec = Math.floor((timeLeft % 60000) / 1000);
+      document.getElementById("timer").textContent = 
+        timeLeft > 0 ? `⏳ Temps restant : ${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}` 
+        : "💥 Temps écoulé !";
     }
 
     function startPersistentTimer() {
       function tick() {
         const timeLeft = getRemainingTime();
         updateTimerDisplay(timeLeft);
-        if (timeLeft > 0) {
-          setTimeout(tick, 1000);
-        }
+        if (timeLeft > 0) setTimeout(tick, 1000);
       }
       tick();
     }
@@ -218,37 +399,8 @@
     function resetTimer() {
       localStorage.setItem("startTime", Date.now());
       startPersistentTimer();
-      alert("Le timer a été réinitialisé.");
+      alert("Timer réinitialisé.");
     }
-
-    function adminLogin() {
-      const modal = document.getElementById("adminModal");
-      modal.style.display = "flex";
-      modal.setAttribute('aria-hidden', 'false');
-      document.getElementById("adminPasswordInput").focus();
-    }
-
-    function closeAdminModal() {
-      const modal = document.getElementById("adminModal");
-      modal.style.display = "none";
-      modal.setAttribute('aria-hidden', 'true');
-      document.getElementById("adminPasswordInput").value = "";
-      document.getElementById("adminError").textContent = "";
-    }
-
-    function validateAdminPassword() {
-      const entered = document.getElementById("adminPasswordInput").value;
-      if (entered === "32591996") {
-        document.getElementById("resetButton").style.display = "inline-block";
-        closeAdminModal();
-        alert("Accès admin accordé. Bouton de réinitialisation activé.");
-      } else {
-        document.getElementById("adminError").textContent = "Mot de passe incorrect.";
-      }
-    }
-
-    startPersistentTimer();
   </script>
-
 </body>
 </html>
