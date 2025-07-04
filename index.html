@@ -239,7 +239,7 @@
   <audio id="finalGlitchSound" src="final-glitch.mp3"></audio>
   <audio id="passwordSuccessSound" src="success.mp3"></audio>
   <audio id="passwordErrorSound" src="error.mp3"></audio>
-  <audio id="waitingMusic" src="waiting.mp3"></audio>
+  <audio id="waitingMusic" src="waiting.mp3"loop></audio>
 
   <!-- INTRO -->
 <div id="intro">
@@ -266,11 +266,7 @@
     <button onclick="checkPassword()">Valider</button>
     <div class="error" id="error"></div>
     <div id="timer">⏳ Temps restant : 60:00</div>
-    <script>
-      // Play waitingMusic in loop when password game is shown
-      waitingMusic.loop = true;
-      waitingMusic.play();
-    </script>
+    
   </div>
 
   <!-- MODAL ADMIN -->
@@ -338,6 +334,7 @@
     function showPasswordGame() {
       glitchDiv.style.display = "none";
       document.getElementById("passwordGame").style.display = "block";
+      document.getElementById("waitingMusic").play();
       startPersistentTimer();
     }
 
